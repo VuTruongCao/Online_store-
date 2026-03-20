@@ -1,0 +1,339 @@
+﻿@model HShop.ViewModels.ChiTietHangHoaVM
+@{
+    ViewData["Title"] = "Chi Tiết Sản Phẩm";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Chi Tiết Sản Phẩm</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Hàng hóa</a></li>
+        <li class="breadcrumb-item active text-white">@Model.TenHH</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+<!-- Single Product Start -->
+<div class="container-fluid py-5 mt-5">
+    <div class="container py-5">
+        <div class="row g-4 mb-5">
+            <div class="col-lg-8 col-xl-9">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="border rounded d-flex align-items-center justify-content-center" style="width: 100%; aspect-ratio: 1 / 1; background-color: #f8f9fa;">
+                            <img src="~/Hinh/HangHoa/@Model.Hinh"
+                                 alt="@Model.TenHH"
+                                 class="img-fluid rounded"
+                                 style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h4 class="fw-bold mb-3">@Model.TenHH</h4>
+                        <p class="mb-3">Danh mục: @Model.TenLoai</p>
+                        <h5 class="fw-bold mb-3">$ @Model.DonGia</h5>
+                        <div class="d-flex align-items-center mb-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(Model.AverageRating))
+                                {
+                                    <i class="fa fa-star text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-star text-muted"></i>
+                                }
+                            }
+                            <span class="ms-2 text-muted">(@Model.AverageRating.ToString("F1") sao - @Model.TotalReviews đánh giá)</span>
+                        </div>
+                        <p class="mb-4">@Model.MoTaNgan</p>
+                        <form asp-action="AddToCart" asp-controller="Cart" asp-route-id="@Model.MaHh">
+                            <div class="input-group quantity mb-5" style="width: 100px;">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-sm btn-minus rounded-circle bg-light border" type="button">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control form-control-sm text-center border-0" value="1" name="quantity">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-sm btn-plus rounded-circle bg-light border" type="button">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary">
+                                <i class="fa fa-shopping-bag me-2 text-primary"></i> Mua hàng
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-lg-12">
+                        <nav>
+                            <div class="nav nav-tabs mb-3">
+                                <button class="nav-link active border-white border-bottom-0" type="button" role="tab"
+                                        id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
+                                        aria-controls="nav-about" aria-selected="true">
+                                    Thông tin hàng hóa
+                                </button>
+                                <button class="nav-link border-white border-bottom-0" type="button" role="tab"
+                                        id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission"
+                                        aria-controls="nav-mission" aria-selected="false">
+                                    Đánh giá
+                                </button>
+                            </div>
+                        </nav>
+                        <div class="tab-content mb-5">
+                            <div class="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
+                                @Model.ChiTiet
+                            </div>
+                            <div class="tab-pane" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
+                                @if (ViewBag.Comments != null && ((List<HShop.ViewModels.CommentDisplayViewModel>)ViewBag.Comments).Count > 0)
+                                {
+                                    foreach (var comment in (List<HShop.ViewModels.CommentDisplayViewModel>)ViewBag.Comments)
+                                    {
+                                        <div class="d-flex mb-4 pb-3 border-bottom">
+                                            <img src="~/Hinh/KhachHang/@comment.CustomerAvatar" 
+                                                 class="img-fluid rounded-circle" 
+                                                 style="width: 80px; height: 80px; object-fit: cover;" 
+                                                 alt="@comment.CustomerName"
+                                                 onerror="this.src='/Hinh/KhachHang/Photo.gif'">
+                                            <div class="ms-3 flex-grow-1">
+                                                <p class="mb-2 text-muted" style="font-size: 14px;">@comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <h6 class="mb-0 fw-bold">@comment.CustomerName</h6>
+                                                    <div class="d-flex">
+                                                        @for (int i = 1; i <= 5; i++)
+                                                        {
+                                                            if (i <= comment.Rating)
+                                                            {
+                                                                <i class="fa fa-star text-warning"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="fa fa-star text-muted"></i>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <p class="mb-2">@comment.Content</p>
+                                                @if (!string.IsNullOrEmpty(comment.ImagePath))
+                                                {
+                                                    <div class="mt-2">
+                                                        <img src="@comment.ImagePath" 
+                                                             class="img-fluid rounded" 
+                                                             style="max-width: 300px; max-height: 300px; object-fit: cover;" 
+                                                             alt="Review image">
+                                                        </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <h4 class="mb-4 fw-bold">Đánh giá sản phẩm</h4>
+                    
+                    @if (ViewBag.CanReview)
+                    {
+                        <div class="alert alert-info mb-4">
+                            <i class="fa fa-info-circle me-2"></i>@ViewBag.ReviewMessage
+                        </div>
+                        
+                        <form asp-action="Create" asp-controller="Comment" method="post" enctype="multipart/form-data" id="reviewForm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="MaHH" value="@Model.MaHh" />
+                            <input type="hidden" name="Rating" id="ratingValue" value="5" />
+                            
+                            <div class="row g-4">
+                                <div class="col-lg-12">
+                                    <div class="border-bottom rounded my-3">
+                                        <textarea name="Content" 
+                                                  class="form-control border-0" 
+                                                  cols="30" 
+                                                  rows="6" 
+                                                  placeholder="Nhập nội dung đánh giá của bạn..." 
+                                                  required></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Hình ảnh sản phẩm (tùy chọn)</label>
+                                        <input type="file" 
+                                               name="ImageUpload" 
+                                               class="form-control" 
+                                               accept="image/*"
+                                               id="imageUpload">
+                                        <small class="text-muted">Chấp nhận: JPG, JPEG, PNG, GIF. Tối đa 5MB</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-12">
+                                    <div class="d-flex justify-content-between align-items-center py-3 mb-4">
+                                        <div class="d-flex align-items-center">
+                                            <p class="mb-0 me-3 fw-semibold">Đánh giá của bạn:</p>
+                                            <div class="rating-stars" id="ratingStars">
+                                                <i class="fa fa-star" data-rating="1"></i>
+                                                <i class="fa fa-star" data-rating="2"></i>
+                                                <i class="fa fa-star" data-rating="3"></i>
+                                                <i class="fa fa-star" data-rating="4"></i>
+                                                <i class="fa fa-star" data-rating="5"></i>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn border border-secondary text-primary rounded-pill px-4 py-3">
+                                            <i class="fa fa-paper-plane me-2"></i>Gửi đánh giá
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fa fa-exclamation-triangle me-2"></i>@ViewBag.ReviewMessage
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <hr/>
+                                <small>
+                                    <strong>🔍 DEBUG:</strong><br/>
+                                    User Identity: @ViewBag.DebugUserIdentity<br/>
+                                    MaKH (từ DB): @ViewBag.DebugMaKH<br/>
+                                    MaHH: @ViewBag.DebugMaHH<br/>
+                                    Số lần mua: @ViewBag.DebugPurchaseCount<br/>
+                                    Đã đánh giá: @ViewBag.DebugReviewCount
+                                </small>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4 col-xl-3">
+                <div class="row g-4 fruite">
+                    <div class="col-lg-12">
+                        @await Html.PartialAsync("_TimKiemPanel")
+                        @await Component.InvokeAsync("MenuLoai")
+                    </div>
+
+                    
+                    <div class="col-lg-12">
+                        <h4 class="mb-4 fw-bold">Sản phẩm nổi bật</h4>
+
+                        @if (ViewBag.FeaturedProducts != null)
+                        {
+                            foreach (var item in ViewBag.FeaturedProducts as List<HShop.ViewModels.HangHoaVM>)
+                            {
+                                <div class="d-flex align-items-center mb-3 border-bottom pb-2 featured-product">
+                                    <img src="~/Hinh/HangHoa/@item.Hinh"
+                                         alt="@item.TenHH"
+                                         class="img-fluid rounded me-3"
+                                         style="width: 70px; height: 70px; object-fit: cover;" />
+                                    <div>
+                                        <a asp-controller="HangHoa" asp-action="Detail" asp-route-id="@item.MaHh"
+                                           class="text-dark fw-semibold text-decoration-none">
+                                            @item.TenHH
+                                        </a>
+                                        <div class="text-success fw-bold small">@item.DonGia.ToString("N0") ₫</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        <div class="d-flex justify-content-center my-4">
+                            <a href="/HangHoa" class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100">Xem thêm</a>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <!-- End Sidebar -->
+        </div>
+
+        
+        <h3 class="fw-bold mb-4 text-success border-bottom pb-2">Sản phẩm liên quan</h3>
+        <div class="row g-4">
+            @if (ViewBag.RelatedProducts != null)
+            {
+                foreach (var sp in ViewBag.RelatedProducts as List<HShop.ViewModels.HangHoaVM>)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="card border-0 shadow-sm h-100 text-center p-3">
+                            <img src="~/Hinh/HangHoa/@sp.Hinh"
+                                 alt="@sp.TenHH"
+                                 class="card-img-top rounded mb-3"
+                                 style="height:180px; object-fit:cover;" />
+                            <h6 class="fw-semibold text-dark">@sp.TenHH</h6>
+                            <p class="text-success fw-bold mb-2">@sp.DonGia.ToString("N0") ₫</p>
+                            <a asp-controller="HangHoa" asp-action="Detail" asp-route-id="@sp.MaHh"
+                               class="btn btn-outline-success btn-sm rounded-pill px-3 mt-2">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">Không có sản phẩm liên quan.</p>
+            }
+        </div>
+    </div>
+</div>
+<!-- Single Product End -->
+
+<style>
+    .featured-product:hover {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        transition: 0.2s ease-in-out;
+    }
+
+    /* Rating stars styling */
+    .rating-stars {
+        display: inline-flex;
+        gap: 5px;
+        font-size: 24px;
+    }
+
+    .rating-stars .fa-star {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .rating-stars .fa-star:hover {
+        transform: scale(1.2);
+    }
+
+    .rating-stars .fa-star.text-warning {
+        color: #ffc107 !important;
+    }
+
+    .rating-stars .fa-star.text-muted {
+        color: #dee2e6 !important;
+    }
+</style>
+
+@section Scripts {
+    <script src="~/js/comment-rating.js"></script>
+}

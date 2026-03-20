@@ -1,0 +1,10 @@
+﻿@model IEnumerable<HShop.ViewModels.HangHoaVM>
+@{
+    ViewData["Title"] = "Tìm Kiếm";
+    Layout = "_DanhSachHangHoa";
+}
+
+<h1>Tìm Kiếm</h1>
+
+@await Html.PartialAsync("ProductItem", Model)
+
